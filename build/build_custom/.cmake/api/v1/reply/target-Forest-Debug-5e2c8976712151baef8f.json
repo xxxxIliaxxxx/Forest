@@ -1,0 +1,277 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "Forest"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt",
+			"libs/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 3,
+				"parent" : 0
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 28,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 29,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 34,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 27,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 14,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 15,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 16,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 18,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 19,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 20,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 21,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 22,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 23,
+				"parent" : 2
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 7,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/SDL/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/SDL_image/include/SDL3_image"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/SDL_ttf/include/SDL3_ttf"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/globals"
+				},
+				{
+					"backtrace" : 11,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/functions"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/forest_classes"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/SDL"
+				},
+				{
+					"backtrace" : 14,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/SDL_image"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/SDL_ttf"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "/home/layvis/Desktop/Try/Forest/build/build_custom/libs/SDL/include-revision"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/SDL_ttf/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/home/layvis/Desktop/Try/Forest/libs/SDL_image/include"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 5,
+			"id" : "MyLib::@10801ec9068017628f26"
+		},
+		{
+			"backtrace" : 6,
+			"id" : "SDL3-shared::@be180c1d6cb18b51fb7d"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "SDL3_ttf-shared::@9d2caeb8583c891087f4"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "SDL3_image-shared::@707abb380c7767d9fd7d"
+		}
+	],
+	"id" : "Forest::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-Wl,-rpath,/home/layvis/Desktop/Try/Forest/build/build_custom/libs/SDL_ttf:/home/layvis/Desktop/Try/Forest/build/build_custom/libs/SDL_image:/home/layvis/Desktop/Try/Forest/build/build_custom/libs/SDL",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "libs/SDL_ttf/libSDL3_ttf.so.0.3.0",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "libs/SDL_image/libSDL3_image.so.0.3.0",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "libs/libMyLib.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "libs/SDL/libSDL3.so.0.3.0",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "Forest",
+	"nameOnDisk" : "Forest",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "libs/globals/globals.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "main.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}
