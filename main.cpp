@@ -19,7 +19,6 @@ using std::unordered_map;
 using std::vector;
 using std::cos;
 
-
 enum directions {stat, up, upright, right, downright, down, downleft, left, upleft};
 
 class PlayerCharacter
