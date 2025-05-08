@@ -2,10 +2,12 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <math.h>
+#include <vector>
 #include "../globals/globals.h"
 
-void DrawCircle(SDL_Renderer *renderer, int x, int y, int radius, SDL_Color clr)
+void CreateCircle(SDL_Renderer *renderer, int x, int y, int radius, SDL_Color clr)
 {
+  std::vector<SDL_FPoint> points;
   SDL_SetRenderDrawColor(renderer, clr.r, clr.g, clr.b, clr.a);
   for (int w = 0; w <= radius * 2; w++)
   {
@@ -14,7 +16,10 @@ void DrawCircle(SDL_Renderer *renderer, int x, int y, int radius, SDL_Color clr)
       float dx = radius - w; // horizontal offset
       float dy = radius - h; // vertical offset
       if (dx * dx + dy * dy <= radius * radius)
-        SDL_RenderPoint(renderer, x + dx, y + dy * sin(worldangle));
+          points.push_back({x + dx, y + dy * sin(worldangle)});
     }
   }
+  SDL_RenderPoints(renderer, &points[0], points.size());
+  points.clear();
+
 }

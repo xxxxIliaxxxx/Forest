@@ -53,7 +53,7 @@
     centre_y = Base.y + Base.h * 9 / 10;
     radius = base_radius * scale;
 
-    DrawCircle(renderer, centre_x, centre_y, radius, green);
+    //CreateCircle(renderer, centre_x, centre_y, radius, green);
   }
 
   void FirTree::Render_Copy()

@@ -167,7 +167,7 @@ public:
 
     if (direction != stat)
       frame++;
-    DrawCircle(renderer, ScWidth / 2, ScHeight / 2, radius, gray);
+    CreateCircle(renderer, ScWidth / 2, ScHeight / 2, radius, gray);
     SDL_RenderTexture(renderer, current, &Clip[frame / int(fps / 4)], &base);
 
     if (frame >= fps)
@@ -398,10 +398,11 @@ struct FPS_Controller
     else
       fps = 1.0 / wait_time.count();
 
+    /*
     end = std::chrono::steady_clock::now();
     wait_time = end - start;
     std::cout << "Frame interval " << wait_time.count() << "\n";
-
+    */
     }
 };
 
@@ -526,11 +527,11 @@ int main(int argc, char *argv[])
     
     Player.Draw_stamina_bar();
     Player.Draw_health_bar();
+
     fpsc.DrawFPS();
     SDL_SetRenderDrawColor(renderer, 7, 180, 95, 100);
     SDL_RenderPresent(renderer);
   }
-
   ////////////////////////Exiting program//////////////////////////////////////
   TTF_CloseFont(my_Font);
   TTF_Quit();

@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <cmath>
+#include <vector>
 #include "globals.h"
 
 

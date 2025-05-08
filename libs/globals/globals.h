@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 extern float std_fps;
 extern float fps;
