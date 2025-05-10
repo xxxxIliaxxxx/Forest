@@ -16,13 +16,15 @@
 using std::cout;
 using std::endl;
 using std::unordered_map;
-using std::vector;
 using std::cos;
 
 enum directions {stat, up, upright, right, downright, down, downleft, left, upleft};
 
 class PlayerCharacter
 {
+  float speed;
+  const float walk = 1.8 * std_fps / fps;
+  const float sprint = 2.6 * std_fps / fps;
   const int texture_width = 45;
   const int texture_height = 60;
   const int centre_x = ScWidth / 2;
@@ -39,8 +41,13 @@ class PlayerCharacter
   SDL_Texture* current;
   bool chng_texture_dir;
   float radius;
-public:
+  float max_stamina = 120;
+  float cur_stamina = 120;
+  float max_health = 100;
+  float cur_health = 100;
 
+public:
+  static bool run;
   static directions direction;
   static SDL_Texture* bowmanleft;
   static SDL_Texture* bowmanright;
@@ -48,10 +55,6 @@ public:
   static SDL_Texture* bowmanup;
   static SDL_Texture* bowmanstatic;
 
-  static float cur_stamina;
-  static float max_stamina;
-  static float cur_health;
-  static float max_health;
 
 
 
@@ -89,6 +92,8 @@ public:
     SDL_SetTextureAlphaMod(bowmanup, 200);
     SDL_SetTextureAlphaMod(bowmandown, 200);
     chng_texture_dir = false;
+
+    speed = walk;
   }
 
   float GetRadius()
@@ -109,7 +114,6 @@ public:
   void Draw_health_bar()
   {
     SDL_SetRenderDrawColor(renderer, 255, 75, 75, 200);
-
     cur_health_bar.w = health_bar.w * float(cur_health / max_health);
     SDL_RenderRect(renderer, &cur_health_bar);
     SDL_RenderRect(renderer, &health_bar);
@@ -119,63 +123,91 @@ public:
   void Draw_stamina_bar()
   {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 200);
-
     cur_stamina_bar.w = stamina_bar.w * float(cur_stamina / max_stamina);
     SDL_RenderRect(renderer, &cur_stamina_bar);
     SDL_RenderRect(renderer, &stamina_bar);
     SDL_RenderFillRect(renderer, &cur_stamina_bar);
   }
 
-  void Draw_character()
+  void MovePlayer()
   {
-    if (direction == left)
-      current = bowmanleft;
-    else if (direction == upleft)
-    {
-      if (chng_texture_dir == false)
-        current = bowmanleft;
-      else
-        current = bowmanup;
-    }
-    else if (direction == downleft)
-    {
-      if (chng_texture_dir == false)
-        current = bowmanleft;
-      else
-        current = bowmandown;
-    }
-    else if (direction == right)
-      current = bowmanright;
-    else if (direction == upright)
-    {
-      if (chng_texture_dir == false)
-        current = bowmanup;
-      else
-        current = bowmanright;
-    }
-    else if (direction == downright)
-    {
-      if (chng_texture_dir == false)
-        current = bowmandown;
-      else
-        current = bowmanright;
-    }
-    else if (direction == down)
-      current = bowmandown;
-    else if (direction == up)
-      current = bowmanup;
 
-    if (direction != stat)
-      frame++;
-    CreateCircle(renderer, ScWidth / 2, ScHeight / 2, radius, gray);
-    SDL_RenderTexture(renderer, current, &Clip[frame / int(fps / 4)], &base);
+    if ((direction == stat) && (cur_stamina < max_stamina))
+    {
+      cur_stamina += 0.35 * std_fps / fps;
+    }
+
+    if (run)
+    {
+      if (cur_stamina > 0)
+      {
+        speed = sprint * scale;
+        cur_stamina -= 0.45 * std_fps / fps;
+      }
+      else
+        speed = walk * scale;
+    }
+    else
+    {
+      speed = walk * scale;
+      if (cur_stamina < max_stamina)
+        cur_stamina += 0.1 * std_fps / fps;
+    }
 
     if (frame >= fps)
     {
       frame = 0;
       chng_texture_dir = !chng_texture_dir;
     }
+
+    switch(direction)
+    {
+    case left:
+      current = bowmanleft;
+      x_offset += speed;
+      break;
+    case right:
+      current = bowmanright;
+      x_offset -= speed;
+      break;
+    case up:
+      current = bowmanup;
+      y_offset += speed * sin(worldangle);
+      break;
+    case down:
+      current = bowmandown;
+      y_offset -= speed * sin(worldangle);
+      break;
+    case downright:
+      y_offset -= speed * sin(worldangle) * sin(a_45);
+      x_offset -= speed * cos(a_45);
+      current = (!chng_texture_dir) ? bowmandown : bowmanright;
+      break;
+    case upright:
+      y_offset += speed * sin(worldangle) * sin(a_45);
+      x_offset -= speed * cos(a_45);
+      current = (!chng_texture_dir) ? bowmanup : bowmanright;
+      break;
+    case downleft:
+      y_offset -= speed * sin(worldangle) * sin(a_45);
+      x_offset += speed * cos(a_45);
+      current = (!chng_texture_dir) ? bowmandown : bowmanleft;
+      break;
+    case upleft:
+      y_offset += speed * sin(worldangle) * sin(a_45);
+      x_offset += speed * cos(a_45);
+      current = (!chng_texture_dir) ? bowmanleft : bowmanup;
+    };
+
+    if (direction != stat)
+      frame++;
+
+    CreateCircle(renderer, ScWidth / 2, ScHeight / 2, radius, gray);
+    SDL_RenderTexture(renderer, current, &Clip[frame / int(fps / 4)], &base);
+
   }
+
+
   
 };
 
@@ -184,9 +216,6 @@ class KeyHandler
 {
   unordered_map <SDL_Keycode,bool> key;
   SDL_Event event;
-  float speed;
-  const float walk = 2.5 * std_fps / fps;
-  const float sprint = 3.5 * std_fps / fps;
 
 public:
 
@@ -196,11 +225,11 @@ public:
     {
       if ((event.wheel.y > 0) && (scale <= max_scale)) // Zoom in
       {
-        scale += 0.05;
+        scale += 0.04;
       }
       else if ((event.wheel.y < 0) && (scale >= min_scale)) // Zoom out
       {  
-        scale -= 0.05;
+        scale -= 0.04;
       }
     }
   }
@@ -208,7 +237,6 @@ public:
 
   KeyHandler()
   {
-    speed = walk;
     key[SDLK_W] = 0;
     key[SDLK_A] = 0;
     key[SDLK_S] = 0;
@@ -237,72 +265,17 @@ public:
   };
 
 
-  void MovePlayer()
-  {
 
-    if ((PlayerCharacter::direction == stat) 
-      && (PlayerCharacter::cur_stamina < PlayerCharacter::max_stamina))
-    {  
-      PlayerCharacter::cur_stamina += 0.35 * std_fps / fps;
-      return;
-    }
-
-    if (key[SDLK_LSHIFT] == true)
-    {
-      if (PlayerCharacter::cur_stamina > 0)
-      {
-        speed = sprint * scale;
-        PlayerCharacter::cur_stamina -= 0.45 * std_fps / fps;
-      }
-      else
-        speed = walk * scale;   
-    }
-    else
-    {
-      speed = walk * scale;
-      if (PlayerCharacter::cur_stamina < PlayerCharacter::max_stamina)
-        PlayerCharacter::cur_stamina += 0.1 * std_fps / fps;
-    }
-
-      switch(PlayerCharacter::direction)
-      {
-        case left:
-          x_offset += speed;
-          break;
-        case right:
-          x_offset -= speed;
-          break;
-        case up:
-          y_offset += speed * sin(worldangle);
-          break;
-        case down:
-          y_offset -= speed * sin(worldangle);
-          break;
-        case downright:
-          y_offset -= speed * sin(worldangle) * sin(a_45);
-          x_offset -= speed * cos(a_45);
-          break;
-        case upright:
-          y_offset += speed * sin(worldangle) * sin(a_45);
-          x_offset -= speed * cos(a_45);
-          break;
-        case downleft:
-          y_offset -= speed * sin(worldangle) * sin(a_45);
-          x_offset += speed * cos(a_45);
-          break;
-        case upleft:
-          y_offset += speed * sin(worldangle) * sin(a_45);
-          x_offset += speed * cos(a_45);
-          break;
-      }
-
-    PlayerCharacter::direction = stat;
-  } 
 
   void ProcessKeyEvents()
   {
     if (key[SDLK_ESCAPE])
       exit(0);
+
+    if (key[SDLK_LSHIFT])
+      PlayerCharacter::run = true;
+    else
+      PlayerCharacter::run = false;
     
     if ((key[SDLK_W] || key[SDLK_UP]) && (key[SDLK_A] || key[SDLK_LEFT]))
     {
@@ -336,18 +309,13 @@ public:
     {
       PlayerCharacter::direction = right;
     }
+    else
+      PlayerCharacter::direction = stat;
   }
 };
 
-
-
-
+bool PlayerCharacter::run = false;
 directions PlayerCharacter::direction = stat;
-float PlayerCharacter::max_stamina = 120;
-float PlayerCharacter::cur_stamina = 120;
-float PlayerCharacter::max_health = 100;
-float PlayerCharacter::cur_health = 100;
-
 SDL_Texture* PlayerCharacter::bowmanleft = IMG_LoadTexture(renderer, "graphics/images/bowmanleft.png" );
 SDL_Texture* PlayerCharacter::bowmanright = IMG_LoadTexture(renderer, "graphics/images/bowmanright.png" );
 SDL_Texture* PlayerCharacter::bowmandown = IMG_LoadTexture(renderer, "graphics/images/bowmandown.png" );
@@ -369,6 +337,7 @@ struct FPS_Controller
     strcat(fps_str, fps_num);
     TTF_SetFontSize(my_Font, 18);
     fps_text = TTF_CreateText(text_engine, my_Font, fps_str, 0);
+    TTF_SetTextColor(fps_text, 255, 255, 0, 200);
     TTF_DrawRendererText(fps_text, ScWidth - 75, 5);
 
   }
@@ -397,13 +366,7 @@ struct FPS_Controller
     }
     else
       fps = 1.0 / wait_time.count();
-
-    /*
-    end = std::chrono::steady_clock::now();
-    wait_time = end - start;
-    std::cout << "Frame interval " << wait_time.count() << "\n";
-    */
-    }
+  }
 };
 
 int main(int argc, char *argv[])
@@ -440,7 +403,7 @@ int main(int argc, char *argv[])
 
 
 
-  vector<FirTree> Firvector;
+  std::vector<FirTree> Firvector;
   Firvector.reserve(100);
   Firvector.emplace_back(10, 100);
   Firvector.emplace_back(100, 180);
@@ -470,9 +433,11 @@ int main(int argc, char *argv[])
   Firvector.emplace_back(860, -230);
   Firvector.emplace_back(910, 430);
   Firvector.emplace_back(610, -145);
+  Firvector.emplace_back(220, -175);
+  Firvector.emplace_back(370, -15);
+  Firvector.emplace_back(420, -310);
 
-
-  vector<Log> Logvector;
+  std::vector<Log> Logvector;
   Logvector.emplace_back(450, 160);
   Logvector.emplace_back(480, 90);
   Logvector.emplace_back(250, 280);
@@ -484,8 +449,9 @@ int main(int argc, char *argv[])
   Logvector.emplace_back(350, 160);
   Logvector.emplace_back(70, 110);
   Logvector.emplace_back(770, 310);
+  Logvector.emplace_back(-320, 10);
 
-  vector<Log2> Logvector2;
+  std::vector<Log2> Logvector2;
   Logvector2.emplace_back(140, 160);
   Logvector2.emplace_back(280, 90);
   Logvector2.emplace_back(20, 280);
@@ -495,6 +461,7 @@ int main(int argc, char *argv[])
   Logvector2.emplace_back(185, 650);
   Logvector2.emplace_back(485, 670);
   Logvector2.emplace_back(-50, -150);
+  Logvector2.emplace_back(-150, 475);
 
   while(1)
   {
@@ -502,7 +469,6 @@ int main(int argc, char *argv[])
     SDL_RenderClear(renderer);
 
     KeyHandlerMain.GetKeyEvents();
-    KeyHandlerMain.MovePlayer();
     KeyHandlerMain.ProcessKeyEvents();
     KeyHandlerMain.Zoom();
 
@@ -518,16 +484,15 @@ int main(int argc, char *argv[])
       Logvector2[i].Render_Copy();
     }
     Player.Zoom();
-    Player.Draw_character();
     for (int i = 0; i < Firvector.size(); i++)
     {
       Firvector[i].Move();
       Firvector[i].Render_Copy(); 
     }
     
+    Player.MovePlayer();
     Player.Draw_stamina_bar();
     Player.Draw_health_bar();
-
     fpsc.DrawFPS();
     SDL_SetRenderDrawColor(renderer, 7, 180, 95, 100);
     SDL_RenderPresent(renderer);
