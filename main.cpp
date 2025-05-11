@@ -403,7 +403,6 @@ int main(int argc, char *argv[])
   PlayerCharacter Player;
 
 
-
   std::vector<FirTree> Firvector;
   Firvector.reserve(100);
   Firvector.emplace_back(10, 100);
