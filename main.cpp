@@ -12,7 +12,9 @@
 #include "libs/forest_classes/forest_classes.h"
 #include <chrono>
 #include <thread>
-
+#include <string>
+#include <random>
+#include <algorithm>
 using std::cout;
 using std::endl;
 using std::unordered_map;
@@ -40,13 +42,13 @@ class PlayerCharacter
   SDL_FRect cur_health_bar;
   SDL_Texture* current;
   bool chng_texture_dir;
-  float radius;
   float max_stamina = 120;
   float cur_stamina = 120;
   float max_health = 100;
   float cur_health = 100;
 
 public:
+  float radius;
   static bool run;
   static directions direction;
   static SDL_Texture* bowmanleft;
@@ -96,11 +98,6 @@ public:
     speed = walk;
   }
 
-  float GetRadius()
-  {
-    return radius;
-  }
-
   void Zoom()
   {
     radius = base_radius * scale;
@@ -127,6 +124,19 @@ public:
     SDL_RenderRect(renderer, &cur_stamina_bar);
     SDL_RenderRect(renderer, &stamina_bar);
     SDL_RenderFillRect(renderer, &cur_stamina_bar);
+  }
+
+
+  void DrawZoom()
+  {
+    char scale_str[7] = "x ";
+    char scale_num[5];
+    sprintf(scale_num, "%.2f", scale);
+    strcat(scale_str, scale_num);
+    TTF_SetFontSize(my_Font, 20);
+    TTF_Text* fps_text = TTF_CreateText(text_engine, my_Font, scale_str, 0);
+    TTF_SetTextColor(fps_text, 255, 255, 0, 200);
+    TTF_DrawRendererText(fps_text, ScWidth - 75, 20);
   }
 
   void MovePlayer()
@@ -225,11 +235,11 @@ public:
     {
       if ((event.wheel.y > 0) && (scale <= max_scale)) // Zoom in
       {
-        scale += 0.04;
+        scale += 0.03;
       }
       else if ((event.wheel.y < 0) && (scale >= min_scale)) // Zoom out
       {  
-        scale -= 0.04;
+        scale -= 0.03;
       }
     }
   }
@@ -328,16 +338,16 @@ struct FPS_Controller
 {
   std::chrono::time_point<std::chrono::steady_clock> start, end;
   std::chrono::duration<double> wait_time;
-  TTF_Text* fps_text;
+
 
   void DrawFPS()
   {
-    char fps_str[8] = "fps~";
+    char fps_str[8] = "fps ";
     char fps_num[5];
     sprintf(fps_num, "%d", int(round(fps)));
     strcat(fps_str, fps_num);
-    TTF_SetFontSize(my_Font, 18);
-    fps_text = TTF_CreateText(text_engine, my_Font, fps_str, 0);
+    TTF_SetFontSize(my_Font, 20);
+    TTF_Text* fps_text = TTF_CreateText(text_engine, my_Font, fps_str, 0);
     TTF_SetTextColor(fps_text, 255, 255, 0, 200);
     TTF_DrawRendererText(fps_text, ScWidth - 75, 5);
 
@@ -401,67 +411,38 @@ int main(int argc, char *argv[])
 
   KeyHandler KeyHandlerMain;
   PlayerCharacter Player;
+  x_offset = ScWidth / 2;
+  y_offset = ScHeight / 2;
+
+  std::vector<std::unique_ptr<Flora>> Forest;
+  Forest.reserve(300);
+
+  std::random_device rd;  // obtain a seed from the OS
+  std::mt19937 gen(rd()); // Standard Mersenne Twister engine
+  std::uniform_int_distribution<> distrib(-800, 800);
+  std::uniform_int_distribution<> Flora_type(0, 3);
 
 
-  std::vector<FirTree> Firvector;
-  Firvector.reserve(100);
-  Firvector.emplace_back(10, 100);
-  Firvector.emplace_back(100, 180);
-  Firvector.emplace_back(400, 200);
-  Firvector.emplace_back(45, 500);
-  Firvector.emplace_back(75, 300);
-  Firvector.emplace_back(210, 100);
-  Firvector.emplace_back(310, 150);
-  Firvector.emplace_back(420, 300);
-  Firvector.emplace_back(620, 310);
-  Firvector.emplace_back(660, 280);
-  Firvector.emplace_back(1000, 280);
-  Firvector.emplace_back(900, 580);
-  Firvector.emplace_back(520, 780);
-  Firvector.emplace_back(200, 930);
-  Firvector.emplace_back(700, 880);
-  Firvector.emplace_back(1600, 1080);
-  Firvector.emplace_back(1740, 850);
-  Firvector.emplace_back(-100, -100);
-  Firvector.emplace_back(-200, -70);
-  Firvector.emplace_back(-270, -170);
-  Firvector.emplace_back(-270, 570);
-  Firvector.emplace_back(-290, -570);
-  Firvector.emplace_back(1000, -530);
-  Firvector.emplace_back(110, -230);
-  Firvector.emplace_back(990, -170);
-  Firvector.emplace_back(860, -230);
-  Firvector.emplace_back(910, 430);
-  Firvector.emplace_back(610, -145);
-  Firvector.emplace_back(220, -175);
-  Firvector.emplace_back(370, -15);
-  Firvector.emplace_back(420, -310);
-
-  std::vector<Log> Logvector;
-  Logvector.emplace_back(450, 160);
-  Logvector.emplace_back(480, 90);
-  Logvector.emplace_back(250, 280);
-  Logvector.emplace_back(30, 60);
-  Logvector.emplace_back(50, 470);
-  Logvector.emplace_back(505, 60);
-  Logvector.emplace_back(80, 810);
-  Logvector.emplace_back(50, 360);
-  Logvector.emplace_back(350, 160);
-  Logvector.emplace_back(70, 110);
-  Logvector.emplace_back(770, 310);
-  Logvector.emplace_back(-320, 10);
-
-  std::vector<Log2> Logvector2;
-  Logvector2.emplace_back(140, 160);
-  Logvector2.emplace_back(280, 90);
-  Logvector2.emplace_back(20, 280);
-  Logvector2.emplace_back(300, 60);
-  Logvector2.emplace_back(145, 450);
-  Logvector2.emplace_back(300, 60);
-  Logvector2.emplace_back(185, 650);
-  Logvector2.emplace_back(485, 670);
-  Logvector2.emplace_back(-50, -150);
-  Logvector2.emplace_back(-150, 475);
+  for (int i = 0; i < 150; ++i)
+  {
+    switch(Flora_type(gen))
+    {
+    case 0:
+      Forest.push_back(std::make_unique<FirTree>(distrib(gen), distrib(gen)));
+      break;
+    case 1:
+      Forest.push_back(std::make_unique<FirTree2>(distrib(gen), distrib(gen)));
+      break;
+    case 2:
+      Forest.push_back(std::make_unique<Log>(distrib(gen), distrib(gen)));
+      break;
+    case 3:
+      Forest.push_back(std::make_unique<Log2>(distrib(gen), distrib(gen)));
+      break;
+    }
+  }
+  std::sort(Forest.begin(), Forest.end(),
+            [](std::unique_ptr<Flora>& one, std::unique_ptr<Flora>& two) { return one->y_start_coord < two->y_start_coord; });
 
   while(1)
   {
@@ -472,27 +453,25 @@ int main(int argc, char *argv[])
     KeyHandlerMain.ProcessKeyEvents();
     KeyHandlerMain.Zoom();
 
-
-    for (int i = 0; i < Logvector.size(); i++)
-    {
-      Logvector[i].Move();
-      Logvector[i].Render_Copy();
-    }
-    for (int i = 0; i < Logvector2.size(); i++)
-    {
-      Logvector2[i].Move();
-      Logvector2[i].Render_Copy();
-    }
     Player.Zoom();
-    for (int i = 0; i < Firvector.size(); i++)
+
+    std::chrono::time_point<std::chrono::steady_clock> start, end;
+    std::chrono::duration<double> wait_time;
+    start = std::chrono::steady_clock::now();
+
+    for (int i = 0; i < Forest.size(); i++)
     {
-      Firvector[i].Move();
-      Firvector[i].Render_Copy(); 
+      Forest[i]->Process();
+      Forest[i]->Render_Copy();
     }
-    
+    end = std::chrono::steady_clock::now();
+    wait_time = end - start;
+    cout << wait_time.count() << std::endl;
+
     Player.MovePlayer();
     Player.Draw_stamina_bar();
     Player.Draw_health_bar();
+    Player.DrawZoom();
     fpsc.DrawFPS();
     SDL_SetRenderDrawColor(renderer, 7, 180, 95, 100);
     SDL_RenderPresent(renderer);
