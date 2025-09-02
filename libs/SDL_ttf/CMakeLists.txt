@@ -17,6 +17,10 @@ project(SDL3_ttf
     VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}"
 )
 
+
+
+
+
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/GetGitRevisionDescription.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/PkgConfigHelper.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/PrivateSdlFunctions.cmake")

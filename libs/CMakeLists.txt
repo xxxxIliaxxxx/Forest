@@ -1,9 +1,23 @@
+add_subdirectory(harfbuzz)
+add_subdirectory(freetype)
+add_subdirectory(plutovg)
+add_subdirectory(plutosvg)
+
+
+
+
 add_subdirectory(SDL)
 add_subdirectory(SDL_ttf)
 add_subdirectory(SDL_image)
 add_subdirectory(globals)
 add_subdirectory(functions)
 add_subdirectory(forest_classes)
+
+
+
+
+
+
 
 add_library (MyLib STATIC forest_classes/forest_classes.cpp functions/functions.cpp)
 
